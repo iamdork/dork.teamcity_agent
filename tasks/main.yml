@@ -34,6 +34,12 @@
     dest: /opt/buildAgent/conf/buildAgent.properties
   when: not bap.stat.exists
 
+- name: change owner of teamcity build agent folder
+  file:
+    path: /opt/buildAgent
+    owner: "{{ dork_user }}"
+    recurse: yes
+
 - name: install teamcity-agent systemd service
   template:
     src: teamcity-agent.service.j2
