@@ -1,0 +1,11 @@
+[Unit]
+Description=Teamcity build agent
+After=network.target
+
+[Service]
+Type=forking
+ExecStart=-/bin/sh /opt/buildAgent/bin/agent.sh start
+ExecStop=-/bin/sh /opt/buildAgent/bin/agent.sh stop
+
+[Install]
+WantedBy=multi-user.target

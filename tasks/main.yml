@@ -1,0 +1,46 @@
+- name: install java
+  yum:
+    name: java-1.7.0-openjdk
+    state: present
+
+- name: download buildagent
+  get_url:
+    url: "{{ teamcity_url }}/update/buildAgent.zip"
+    dest: /tmp/buildAgent.zip
+
+- name: create buildagent directory
+  file:
+    path: /opt/buildAgent
+    state: directory
+
+- name: unzip buildagent
+  unarchive:
+    copy: no
+    src: /tmp/buildAgent.zip
+    dest: /opt/buildAgent
+    creates: /opt/buildAgent/service.properties
+
+- name: check if buildAgent.properties exist
+  stat:
+    path: /opt/buildAgent/conf/buildAgent.properties
+  register: bap
+
+- name: create buildAgent.properties
+  template:
+    src: buildAgent.properties.j2
+    dest: /opt/buildAgent/conf/buildAgent.properties
+  when: not bap.stat.exists
+
+- name: install teamcity-agent systemd service
+  template:
+    src: teamcity-agent.service.j2
+    dest: /etc/systemd/system/teamcity-agent.service
+
+- name: reload systemctl
+  shell: systemctl daemon-reload
+
+- name: enable teamcity-agent
+  shell: systemctl enable teamcity-agent
+
+- name: start teamcity-agent
+  shell: service teamcity-agent start
