@@ -37,7 +37,7 @@
 - name: change owner of teamcity build agent folder
   file:
     path: /opt/buildAgent
-    owner: "{{ dork_user }}"
+    owner: "{{ teamcity_user }}"
     recurse: yes
 
 - name: install teamcity-agent systemd service
